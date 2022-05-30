@@ -19,6 +19,11 @@ export default function ComponentsPage() {
     ValidationAndFuturePredictionUrl,
     setValidationAndFuturePredictionUrl,
   ] = React.useState('');
+  const [isRegistered, setIsRegistered] = React.useState(false);
+  const [emailButtonText, setEmailButtonText] =
+    React.useState<string>('Register Email');
+  const [isSendMailLoading, setIsSendMailLoading] = React.useState(false);
+  const emailRef = React.useRef<HTMLInputElement>(null);
 
   const [isLoading, setIsLoading] = React.useState(false);
   const [text, setText] = React.useState(
@@ -31,6 +36,8 @@ export default function ComponentsPage() {
   const textColor = mode === 'dark' ? 'text-gray-300' : 'text-gray-600';
 
   const renderGraph = async () => {
+    setIsRegistered(false);
+    setEmailButtonText('Register Email');
     setIsLoading(true);
     const response = await axios.get('/api/stockpredictor', {
       params: {
@@ -51,8 +58,26 @@ export default function ComponentsPage() {
     setIsRenderGraph(true);
   };
 
-  console.log(OriginalDataUrl);
-  console.log(ValidationAndFuturePredictionUrl);
+  const sendEmail = async (email: string) => {
+    setIsSendMailLoading(true);
+
+    const response = await axios.get('/api/sendmail', {
+      params: {
+        email,
+      },
+    });
+
+    if (response.status === 200) {
+      setEmailButtonText('Email Sent');
+      setIsRegistered(true);
+    } else {
+      setText('Something Went Wrong. Please Reach out the Developers');
+    }
+    if (emailRef.current) {
+      emailRef.current.value = '';
+    }
+    setIsSendMailLoading(false);
+  };
 
   return (
     <Layout>
@@ -111,8 +136,31 @@ export default function ComponentsPage() {
                     isLoading={isLoading}
                     onClick={renderGraph}
                     variant='outline'
+                    style={{ display: isRenderGraph ? 'none' : 'block' }}
                   >
                     Render Graph
+                  </Button>
+                  {isRenderGraph && (
+                    <Button
+                      onClick={() => setIsRenderGraph(false)}
+                      variant='primary'
+                    >
+                      Reset Graph
+                    </Button>
+                  )}
+                </div>
+                <div
+                  style={{ display: isRenderGraph ? 'block' : 'none' }}
+                  className='flex flex-wrap gap-1'
+                >
+                  <input type='text' className='mr-2' ref={emailRef} />
+                  <Button
+                    disabled={isRegistered ? true : false}
+                    onClick={() => sendEmail(emailRef.current?.value as string)}
+                    variant='outline'
+                    isLoading={isSendMailLoading}
+                  >
+                    {emailButtonText}
                   </Button>
                 </div>
               </li>

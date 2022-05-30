@@ -22,13 +22,13 @@ export default function HomePage() {
               A Semantic UI based stock prediction model based on Deep Learning
             </p>
             <p className='mt-2 text-sm text-gray-700'>
-              <ArrowLink href='https://github.com/irfan7junior/stock-prediction-ui'>
+              <ArrowLink href='https://github.com/irfan7junior/stock-prediction'>
                 UI and Server Repository
               </ArrowLink>
             </p>
             <p className='mt-2 text-sm text-gray-700'>
-              <ArrowLink href='https://github.com/irfan7junior/stock-prediction-ui'>
-                Deep Learning Repository
+              <ArrowLink href='https://colab.research.google.com/drive/1fW2jG3CMc8MZWQNvhiB5QSQ2wnWQYVD1'>
+                Deep Learning Colab Repository
               </ArrowLink>
             </p>
 
