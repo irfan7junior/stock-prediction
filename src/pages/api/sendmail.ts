@@ -20,15 +20,6 @@ const transport = nodemailer.createTransport(
   }
 );
 
-//eslint-disable-next-line no-unused-vars
-transport.verify((error: any, _success: any) => {
-  if (error) {
-    console.log(error);
-  } else {
-    console.log('Server is ready to take our messages');
-  }
-});
-
 const sendRegistrationMail = async (user: any) => {
   const mailOptions = {
     from: process.env.EMAIL_ID,
@@ -51,6 +42,18 @@ export default async function sendmail(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  await new Promise((resolve, reject) => {
+    transport.verify((error: any, success: any) => {
+      if (error) {
+        console.log(error);
+        reject(error);
+      } else {
+        console.log('Server is ready to take our messages');
+        resolve(success);
+      }
+    });
+  });
+
   const email = req.query.email as string;
   const name = email.split('@')[0];
 
