@@ -20,28 +20,13 @@ const transport = nodemailer.createTransport(
   }
 );
 
-const sendRegistrationMail = async (user: any) => {
-  const mailOptions = {
-    from: process.env.EMAIL_ID,
-    to: user.email,
-    subject: 'Registration Successful for Stock Prediction',
-    text: `Hello ${user.name}, thank you for registering for Stock Prediction.
-    Please visit ${process.env.WEBSITE_URL} for more stock predictions.
-    `,
-  };
-
-  return new Promise((resolve, reject) => {
-    transport.sendMail(mailOptions, function (err: any, info: any) {
-      if (err) reject(err);
-      else resolve(info);
-    });
-  });
-};
-
 export default async function sendmail(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  const email = req.query.email as string;
+  const name = email.split('@')[0];
+
   await new Promise((resolve, reject) => {
     transport.verify((error: any, success: any) => {
       if (error) {
@@ -54,13 +39,26 @@ export default async function sendmail(
     });
   });
 
-  const email = req.query.email as string;
-  const name = email.split('@')[0];
+  const mailOptions = {
+    from: process.env.EMAIL_ID,
+    to: email,
+    subject: 'Registration Successful for Stock Prediction',
+    text: `Hello ${name}, thank you for registering for Stock Prediction.
+    Please visit ${process.env.WEBSITE_URL} for more stock predictions.
+    `,
+  };
 
-  try {
-    await sendRegistrationMail({ email, name });
-    res.status(200).json({});
-  } catch (error) {
-    res.status(500).json({ error: true });
-  }
+  let responseText = '';
+  await new Promise((resolve, reject) => {
+    transport.sendMail(mailOptions, function (err: any, info: any) {
+      if (err) {
+        responseText = 'Email Not Set';
+        reject(err);
+      } else {
+        responseText = 'Email Sent';
+        resolve(info);
+      }
+    });
+    res.status(200).json({ responseText });
+  });
 }
