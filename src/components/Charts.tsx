@@ -77,10 +77,12 @@ const Charts: React.FC<ICharts> = ({ DataURL }) => {
           predicted,
         });
       }
-      tempAll.push({
-        date: new Date(date1 || 0),
-        actual,
-      });
+      if (i % 10 == 0) {
+        tempAll.push({
+          date: new Date(date1 || 0),
+          actual,
+        });
+      }
     }
     while (
       j < (fetchedData?.validation_and_future_prediction.date.length || 0)
