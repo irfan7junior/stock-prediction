@@ -12,10 +12,10 @@ import {
 } from 'recharts';
 import { CategoricalChartState } from 'recharts/types/chart/generateCategoricalChart';
 
-import { ReturnPrediction, ReturnTraining } from '@/components/Charts';
+import { ReturnAll } from '@/components/Charts';
 
 interface IChart {
-  data: ReturnTraining[] | ReturnPrediction[];
+  data: ReturnAll[];
 }
 
 const dateFormatter = (date: Date) => {
@@ -32,7 +32,7 @@ const dateFormatter = (date: Date) => {
 //   return reducedData;
 // };
 
-const Chart: React.FC<IChart> = ({ data: original }) => {
+const AllChart: React.FC<IChart> = ({ data: original }) => {
   //console.log(tasks,ondelete)
   // const [original, setOriginal] = use(data);
   // const original = useRef(data);
@@ -42,8 +42,6 @@ const Chart: React.FC<IChart> = ({ data: original }) => {
     right: 'dataMax',
     top: 'dataMax+200',
     bottom: 'dataMin-200',
-    top2: 'dataMax+200',
-    bottom2: 'dataMin-200',
     animation: true,
   });
   const [refAreaLeft, setRefAreaLeft] = useState<string | number | undefined>(
@@ -62,8 +60,6 @@ const Chart: React.FC<IChart> = ({ data: original }) => {
       right: 'dataMax',
       top: 'dataMax+200',
       bottom: 'dataMin-200',
-      top2: 'dataMax+200',
-      bottom2: 'dataMin-200',
       animation: true,
     });
   }, [original]);
@@ -106,25 +102,15 @@ const Chart: React.FC<IChart> = ({ data: original }) => {
     const [bottom, top] = getAxisYDomain(
       refAreaLeft as number,
       refAreaRight as number,
-      'predicted',
+      'actual',
       10
     );
-    let [bottom2, top2] = ['', ''] as [string | number, string | number];
-    if (state.data[0] && (state.data[0] as any).actual)
-      [bottom2, top2] = getAxisYDomain(
-        refAreaLeft as any,
-        refAreaRight as any,
-        'actual',
-        10
-      );
     setState({
       data: data.slice((refAreaLeft as any) - 1, refAreaRight as any),
       left: (data[refAreaLeft as any] as any).date,
       right: (data[refAreaRight as any] as any).date,
       bottom,
       top,
-      bottom2,
-      top2,
     } as any);
     setRefAreaLeft('');
     setRefAreaRight('');
@@ -138,8 +124,6 @@ const Chart: React.FC<IChart> = ({ data: original }) => {
       right: 'dataMax',
       top: 'dataMax+200',
       bottom: 'dataMin-200',
-      top2: 'dataMax+200',
-      bottom2: 'dataMin-200',
     } as any);
     setRefAreaLeft('');
     setRefAreaRight('');
@@ -150,11 +134,9 @@ const Chart: React.FC<IChart> = ({ data: original }) => {
       className='highlight-bar-charts'
       style={{ userSelect: 'none', width: '100%' }}
     >
-      {state.data[0] && (state.data[0] as any).actual ? (
-        <button type='button' className='btn update' onClick={zoomOut}>
-          Zoom Out
-        </button>
-      ) : null}
+      <button type='button' className='btn update' onClick={zoomOut}>
+        Zoom Out
+      </button>
 
       <ResponsiveContainer width='100%' height={400}>
         <LineChart
@@ -192,30 +174,15 @@ const Chart: React.FC<IChart> = ({ data: original }) => {
             type='number'
             yAxisId='1'
           />
-          <YAxis
-            orientation='right'
-            allowDataOverflow
-            domain={[state.bottom2, state.top2]}
-            type='number'
-            yAxisId='2'
-          />
           <Tooltip labelFormatter={dateFormatter} />
+
           <Line
             yAxisId='1'
             type='natural'
-            dataKey='predicted'
-            stroke='#8884d8'
+            dataKey='actual'
+            stroke='#82ca9d'
             animationDuration={300}
           />
-          {state.data[0] && (state.data[0] as any).actual ? (
-            <Line
-              yAxisId='2'
-              type='natural'
-              dataKey='actual'
-              stroke='#82ca9d'
-              animationDuration={300}
-            />
-          ) : null}
           {refAreaLeft && refAreaRight ? (
             <ReferenceArea
               yAxisId='1'
@@ -230,4 +197,4 @@ const Chart: React.FC<IChart> = ({ data: original }) => {
     </div>
   );
 };
-export default Chart;
+export default AllChart;

@@ -14,11 +14,11 @@ export default function ComponentsPage() {
   const [mode, setMode] = React.useState<'dark' | 'light'>('light');
   const [stock, setStock] = React.useState<Stock>('britannia');
   const [isRenderGraph, setIsRenderGraph] = React.useState(false);
-  const [OriginalDataUrl, setOriginalDataUrl] = React.useState('');
-  const [
-    ValidationAndFuturePredictionUrl,
-    setValidationAndFuturePredictionUrl,
-  ] = React.useState('');
+  const [DataUrl, setDataUrl] = React.useState('');
+  // const [
+  //   ValidationAndFuturePredictionUrl,
+  //   setValidationAndFuturePredictionUrl,
+  // ] = React.useState('');
   const [isRegistered, setIsRegistered] = React.useState(false);
   const [emailButtonText, setEmailButtonText] =
     React.useState<string>('Register Email');
@@ -39,19 +39,23 @@ export default function ComponentsPage() {
     setIsRegistered(false);
     setEmailButtonText('Register Email');
     setIsLoading(true);
-    const response = await axios.get('/api/stockpredictor', {
-      params: {
-        stock_name: stock,
-      },
-    });
-    if (response.status !== 200) {
-      setText('Something Went Wrong. Please Reach out the Developers');
-      setIsLoading(false);
-    }
+    // const response = await axios.get('/api/stockpredictor', {
+    //   params: {
+    //     stock_name: stock,
+    //   },
+    // });
+    // if (response.status !== 200) {
+    //   setText('Something Went Wrong. Please Reach out the Developers');
+    //   setIsLoading(false);
+    // }
 
-    setOriginalDataUrl(response.data.original_data_url);
-    setValidationAndFuturePredictionUrl(
-      response.data.validation_and_future_prediction_url
+    // setDataUrl(response.data.original_data_url);
+    // setValidationAndFuturePredictionUrl(
+    //   response.data.validation_and_future_prediction_url
+    // );
+
+    setDataUrl(
+      `https://raw.githubusercontent.com/keshav-space/LSTMforStocks/main/export/api_${stock}.json`
     );
 
     setIsLoading(false);
@@ -165,14 +169,7 @@ export default function ComponentsPage() {
                 </div>
               </li>
             </ol>
-            {isRenderGraph && (
-              <Charts
-                OriginalDataUrl={OriginalDataUrl}
-                ValidationAndFuturePredictionUrl={
-                  ValidationAndFuturePredictionUrl
-                }
-              />
-            )}
+            {isRenderGraph && <Charts DataURL={DataUrl} />}
           </div>
         </section>
       </main>
@@ -180,4 +177,4 @@ export default function ComponentsPage() {
   );
 }
 
-const stockList = ['britannia'] as const;
+const stockList = ['britannia', 'itc', 'reliance', 'sbin'] as const;
